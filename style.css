@@ -1,0 +1,158 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+  color: #333;
+}
+
+#app {
+  max-width: 900px;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+}
+
+h2 {
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+section {
+  margin-bottom: 40px;
+}
+
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.input-group input[type="text"],
+.input-group input[type="number"],
+.input-group textarea,
+#file-upload {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.button-group {
+  margin-top: 20px;
+  text-align: right;
+}
+
+button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: #fff;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+#admin-login-btn,
+#switch-mode-btn {
+  background-color: #6c757d;
+}
+
+#admin-login-btn:hover,
+#switch-mode-btn:hover {
+  background-color: #5a6268;
+}
+
+.team-item,
+.investor-item {
+  padding: 10px;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.team-item.top-3 {
+  background-color: #fffacd;
+}
+
+.investor-item.top-3 {
+  background-color: #e0f7fa;
+}
+
+.rank-badge {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  background-color: #ffc107;
+  color: #333;
+  padding: 3px 6px;
+  border-radius: 3px;
+  font-weight: bold;
+  font-size: 0.8em;
+}
+
+.invest-form {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.invest-form input {
+  flex: 1;
+}
+
+.invest-form button {
+  padding: 5px 10px;
+}
+
+#investment-status {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f0f8ff;
+  border: 1px solid #b0c4de;
+  border-radius: 5px;
+}
+
+#student-info {
+  background-color: #e9ecef;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  font-size: 1.1em;
+}
+
+#student-info strong {
+  color: #0056b3;
+}
+
+#investment-list li {
+  list-style-type: none;
+  padding: 5px;
+}
+
+.error-message {
+  color: #dc3545;
+  font-weight: bold;
+}
