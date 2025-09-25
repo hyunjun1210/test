@@ -1,158 +1,169 @@
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
-  margin: 0;
-  padding: 20px;
-  color: #333;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+    color: #333;
 }
 
 #app {
-  max-width: 900px;
-  margin: 0 auto;
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
-  text-align: center;
-  color: #333;
+    text-align: center;
+    color: #333;
 }
 
 h2 {
-  border-bottom: 2px solid #eee;
-  padding-bottom: 10px;
-  margin-bottom: 20px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 section {
-  margin-bottom: 40px;
+    margin-bottom: 40px;
 }
 
 .input-group {
-  margin-bottom: 15px;
+    margin-bottom: 15px;
 }
 
 .input-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
 }
 
 .input-group input[type="text"],
 .input-group input[type="number"],
 .input-group textarea,
 #file-upload {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
 }
 
 .button-group {
-  margin-top: 20px;
-  text-align: right;
+    margin-top: 20px;
+    text-align: right;
 }
 
 button {
-  padding: 10px 15px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  background-color: #007bff;
-  color: #fff;
-  font-size: 16px;
-  transition: background-color 0.3s;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 16px;
+    transition: background-color 0.3s;
 }
 
 button:hover {
-  background-color: #0056b3;
+    background-color: #0056b3;
 }
 
 #admin-login-btn,
 #switch-mode-btn {
-  background-color: #6c757d;
+    background-color: #6c757d;
 }
 
 #admin-login-btn:hover,
 #switch-mode-btn:hover {
-  background-color: #5a6268;
+    background-color: #5a6268;
 }
 
+/* ⚠️ 수정된 부분 */
 .team-item,
 .investor-item {
-  padding: 10px;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  margin-bottom: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: relative;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    display: flex; /* Flexbox 레이아웃 사용 */
+    align-items: center; /* 세로 정렬 */
+    gap: 15px; /* 요소 간 간격 */
 }
 
 .team-item.top-3 {
-  background-color: #fffacd;
+    background-color: #fffacd;
 }
 
 .investor-item.top-3 {
-  background-color: #e0f7fa;
+    background-color: #e0f7fa;
 }
 
+/* ⚠️ 수정된 부분 */
 .rank-badge {
-  position: absolute;
-  top: 5px;
-  left: 5px;
-  background-color: #ffc107;
-  color: #333;
-  padding: 3px 6px;
-  border-radius: 3px;
-  font-weight: bold;
-  font-size: 0.8em;
+    background-color: #ffc107;
+    color: #333;
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-weight: bold;
+    font-size: 0.9em;
+    flex-shrink: 0; /* 크기가 줄어들지 않도록 설정 */
+}
+
+.team-item strong,
+.investor-item strong {
+    flex-grow: 1; /* 이름이 가능한 공간을 모두 차지하도록 설정 */
+}
+
+.team-item span:last-child,
+.investor-item span:last-child {
+    flex-shrink: 0; /* 총 투자금/수익이 줄어들지 않도록 설정 */
+    text-align: right;
+    white-space: nowrap; /* 줄바꿈 방지 */
 }
 
 .invest-form {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
 }
 
 .invest-form input {
-  flex: 1;
+    flex: 1;
 }
 
 .invest-form button {
-  padding: 5px 10px;
+    padding: 5px 10px;
 }
 
 #investment-status {
-  margin-top: 20px;
-  padding: 15px;
-  background-color: #f0f8ff;
-  border: 1px solid #b0c4de;
-  border-radius: 5px;
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f0f8ff;
+    border: 1px solid #b0c4de;
+    border-radius: 5px;
 }
 
 #student-info {
-  background-color: #e9ecef;
-  padding: 10px;
-  border-radius: 5px;
-  margin-bottom: 15px;
-  font-size: 1.1em;
+    background-color: #e9ecef;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 1.1em;
 }
 
 #student-info strong {
-  color: #0056b3;
+    color: #0056b3;
 }
 
-#investment-list li {
-  list-style-type: none;
-  padding: 5px;
+#my-investments li {
+    list-style-type: none;
+    padding: 5px;
 }
 
 .error-message {
-  color: #dc3545;
-  font-weight: bold;
+    color: #dc3545;
+    font-weight: bold;
 }
