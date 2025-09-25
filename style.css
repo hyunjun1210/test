@@ -81,16 +81,16 @@ button:hover {
     background-color: #5a6268;
 }
 
-/* ⚠️ 수정된 부분 */
 .team-item,
 .investor-item {
     padding: 15px;
     border: 1px solid #eee;
     border-radius: 4px;
     margin-bottom: 10px;
-    display: flex; /* Flexbox 레이아웃 사용 */
-    align-items: center; /* 세로 정렬 */
-    gap: 15px; /* 요소 간 간격 */
+    display: flex;
+    flex-direction: column; /* 세로 방향으로 정렬 */
+    align-items: flex-start; /* 왼쪽 정렬 */
+    gap: 10px;
 }
 
 .team-item.top-3 {
@@ -101,7 +101,6 @@ button:hover {
     background-color: #e0f7fa;
 }
 
-/* ⚠️ 수정된 부분 */
 .rank-badge {
     background-color: #ffc107;
     color: #333;
@@ -109,33 +108,39 @@ button:hover {
     border-radius: 3px;
     font-weight: bold;
     font-size: 0.9em;
-    flex-shrink: 0; /* 크기가 줄어들지 않도록 설정 */
 }
 
-.team-item strong,
-.investor-item strong {
-    flex-grow: 1; /* 이름이 가능한 공간을 모두 차지하도록 설정 */
+.team-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 }
 
-.team-item span:last-child,
-.investor-item span:last-child {
-    flex-shrink: 0; /* 총 투자금/수익이 줄어들지 않도록 설정 */
+.team-info strong {
+    flex-grow: 1;
+}
+
+.team-info span {
     text-align: right;
-    white-space: nowrap; /* 줄바꿈 방지 */
+    white-space: nowrap;
 }
 
+/* ✅ 수정된 부분: 투자 폼을 가로로 정렬하고 간격을 조정 */
 .invest-form {
     display: flex;
     gap: 10px;
-    margin-top: 10px;
+    width: 100%; /* 부모 너비에 맞춤 */
 }
 
 .invest-form input {
-    flex: 1;
+    flex: 1; /* 입력 필드가 남은 공간을 채우도록 설정 */
+    min-width: 100px;
 }
 
 .invest-form button {
     padding: 5px 10px;
+    white-space: nowrap; /* 줄바꿈 방지 */
 }
 
 #investment-status {

@@ -16,7 +16,7 @@ const investorsRef = firebase.database().ref('investors');
 let teamsData = []; 
 let investorsData = []; 
 // ⚠️ 반드시 비밀번호를 변경하세요! 
-const ADMIN_PASSWORD = '5678';  
+const ADMIN_PASSWORD = '5678';   
 let currentStudent = null; 
 
 const app = document.getElementById('app'); 
@@ -144,9 +144,11 @@ function render() {
             li.className = 'team-item'; 
             if (team.rank <= 3) li.classList.add('top-3'); 
             li.innerHTML = ` 
-                <span class="rank-badge">${team.rank}위</span> 
-                <strong>${team.name}</strong> 
-                <span>총 투자금: ${team.totalInvestment.toLocaleString()}원</span> 
+                <div class="team-info">
+                    <span class="rank-badge">${team.rank}위</span> 
+                    <strong>${team.name}</strong> 
+                    <span>총 투자금: ${team.totalInvestment.toLocaleString()}원</span>
+                </div>
             `; 
             teamRankList.appendChild(li); 
         }); 
@@ -158,9 +160,11 @@ function render() {
             li.className = 'investor-item'; 
             if (investor.rank <= 3) li.classList.add('top-3'); 
             li.innerHTML = ` 
-                <span class="rank-badge">${investor.rank}위</span> 
-                <strong>${investor.studentId} ${investor.name}</strong> 
-                <span>총 수익: ${investor.totalReturn.toLocaleString()}원</span> 
+                <div class="team-info">
+                    <span class="rank-badge">${investor.rank}위</span> 
+                    <strong>${investor.studentId} ${investor.name}</strong> 
+                    <span>총 수익: ${investor.totalReturn.toLocaleString()}원</span>
+                </div>
             `; 
             investorRankList.appendChild(li); 
         }); 
@@ -260,8 +264,10 @@ function render() {
                 const li = document.createElement('li'); 
                 li.className = 'team-item'; 
                 li.innerHTML = ` 
-                    <strong>${team.name}</strong> 
-                    <span>총 투자금: ${team.totalInvestment.toLocaleString()}원</span> 
+                    <div class="team-info">
+                        <strong>${team.name}</strong> 
+                        <span>총 투자금: ${team.totalInvestment.toLocaleString()}원</span>
+                    </div>
                     <div class="invest-form"> 
                         <input type="number" class="investment-amount" placeholder="투자 금액 (원)" min="1" max="10000000"> 
                         <button class="invest-btn" data-team-id="${team.id}">투자하기</button> 
@@ -271,60 +277,59 @@ function render() {
             }); 
 
            // 투자 버튼 클릭 이벤트
-document.querySelectorAll('.invest-btn').forEach(button => {
-    button.addEventListener('click', (e) => {
-        const teamId = e.target.dataset.teamId;
-        const input = e.target.closest('.invest-form').querySelector('.investment-amount');
-        const newAmount = parseInt(input.value); // 사용자 입력 금액
+           document.querySelectorAll('.invest-btn').forEach(button => {
+               button.addEventListener('click', (e) => {
+                   const teamId = e.target.dataset.teamId;
+                   const input = e.target.closest('.invest-form').querySelector('.investment-amount');
+                   const newAmount = parseInt(input.value); // 사용자 입력 금액
 
-        if (isNaN(newAmount) || newAmount <= 0) {
-            alert('유효한 투자 금액을 입력하세요.');
-            return;
-        }
+                   if (isNaN(newAmount) || newAmount <= 0) {
+                       alert('유효한 투자 금액을 입력하세요.');
+                       return;
+                   }
 
-        const currentInvestment = currentStudent.investments[teamId]?.amount || 0; // 이전에 투자한 금액
-        const totalInvestedAmount = Object.values(currentStudent.investments).reduce((sum, inv) => sum + inv.amount, 0);
-        const totalRemaining = 10000000 - totalInvestedAmount;
+                   const currentInvestment = currentStudent.investments[teamId]?.amount || 0;
+                   const totalInvestedAmount = Object.values(currentStudent.investments).reduce((sum, inv) => sum + inv.amount, 0);
+                   const totalRemaining = 10000000 - totalInvestedAmount;
 
-        // 새로운 투자액(기존 투자액 + 추가 투자액)이 잔여 금액을 초과하는지 확인
-        if (newAmount > totalRemaining + currentInvestment) {
-            alert('총 투자 금액 10,000,000원을 초과할 수 없습니다.');
-            return;
-        }
+                   if (newAmount > totalRemaining) {
+                       alert('남은 투자 가능 금액을 초과할 수 없습니다.');
+                       return;
+                   }
 
-        const updatedInvestment = currentInvestment + newAmount;
-        const updates = {};
-        const teamToUpdate = teamsData.find(t => t.id === teamId);
-        
-        if (teamToUpdate) {
-            // 학생의 투자 정보 업데이트
-            updates[`investors/${currentStudent.studentId}/investments/${teamId}`] = { teamId, amount: updatedInvestment };
-            
-            // 팀의 총 투자금 업데이트
-            updates[`teams/${teamToUpdate.id}/totalInvestment`] = (teamToUpdate.totalInvestment || 0) + newAmount;
-        } else {
-            console.error("오류: 투자를 시도한 팀을 찾을 수 없습니다.");
-            alert("투자에 실패했습니다. 팀을 찾을 수 없습니다.");
-            return;
-        }
-        
-        firebase.database().ref().update(updates)
-            .then(() => {
-                // 현재 학생 객체 업데이트
-                if (!currentStudent.investments) {
-                    currentStudent.investments = {};
-                }
-                currentStudent.investments[teamId] = { teamId, amount: updatedInvestment };
-                updateMyInvestments();
-                updateInvestmentStatus();
-                alert('투자가 완료되었습니다!');
-            })
-            .catch(error => {
-                console.error("투자 업데이트 실패: ", error);
-                alert('투자에 실패했습니다.');
-            });
-    });
-});
+                   const updatedInvestment = currentInvestment + newAmount;
+                   const updates = {};
+                   const teamToUpdate = teamsData.find(t => t.id === teamId);
+                   
+                   if (teamToUpdate) {
+                       // 학생의 투자 정보 업데이트
+                       updates[`investors/${currentStudent.studentId}/investments/${teamId}`] = { teamId, amount: updatedInvestment };
+                       
+                       // 팀의 총 투자금 업데이트
+                       updates[`teams/${teamToUpdate.id}/totalInvestment`] = (teamToUpdate.totalInvestment || 0) + newAmount;
+                   } else {
+                       console.error("오류: 투자를 시도한 팀을 찾을 수 없습니다.");
+                       alert("투자에 실패했습니다. 팀을 찾을 수 없습니다.");
+                       return;
+                   }
+                   
+                   firebase.database().ref().update(updates)
+                       .then(() => {
+                           // 현재 학생 객체 업데이트
+                           if (!currentStudent.investments) {
+                               currentStudent.investments = {};
+                           }
+                           currentStudent.investments[teamId] = { teamId, amount: updatedInvestment };
+                           updateMyInvestments();
+                           updateInvestmentStatus();
+                           alert('투자가 완료되었습니다!');
+                       })
+                       .catch(error => {
+                           console.error("투자 업데이트 실패: ", error);
+                           alert('투자에 실패했습니다.');
+                       });
+               });
+           });
 
             // 나의 투자 현황 업데이트 
             const updateMyInvestments = () => { 
