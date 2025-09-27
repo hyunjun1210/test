@@ -283,35 +283,35 @@ function render() {
             });
 
            // 투자 버튼 클릭 이벤트
-           document.querySelectorAll('.invest-btn').forEach(button => {
-               button.addEventListener('click', (e) => {
-                   const teamId = e.target.dataset.teamId;
-                   const input = e.target.closest('.invest-form').querySelector('.investment-amount');
-                   const newAmount = parseInt(input.value); // 사용자 입력 금액 (만원 단위)
+        document.querySelectorAll('.invest-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const teamId = e.target.dataset.teamId;
+                const input = e.target.closest('.invest-form').querySelector('.investment-amount');
+                const newAmount = parseInt(input.value); // 사용자 입력 금액 (만원 단위)
 
-                   if (isNaN(newAmount) || newAmount <= 0) {
-                       alert('유효한 투자 금액을 입력하세요.');
-                       return;
-                   }
+                if (isNaN(newAmount) || newAmount <= 0) {
+                    alert('유효한 투자 금액을 입력하세요.');
+                    return;
+                }
 
-                   const currentInvestments = currentStudent.investments || {};
-                   const currentInvestment = currentInvestments[teamId]?.amount || 0;
-                   const totalInvestedAmount = Object.values(currentInvestments).reduce((sum, inv) => sum + inv.amount, 0);
-                   const totalRemaining = 1000 - totalInvestedAmount;
+                const currentInvestments = currentStudent.investments || {};
+                const currentInvestment = currentInvestments[teamId]?.amount || 0;
+                const totalInvestedAmount = Object.values(currentInvestments).reduce((sum, inv) => sum + inv.amount, 0);
+                const totalRemaining = 1000 - totalInvestedAmount;
 
-                   if (newAmount > totalRemaining) {
-                       alert('남은 투자 가능 금액을 초과할 수 없습니다.');
-                       return;
-                   }
+                if (newAmount > totalRemaining) {
+                    alert('남은 투자 가능 금액을 초과할 수 없습니다.');
+                    return;
+                }
 
-                   const updatedInvestment = currentInvestment + newAmount;
-                   const updates = {};
-                   const teamToUpdate = teamsData.find(t => t.id === teamId);
-                   
-                   if (teamToUpdate) {
-                       // 학생의 투자 정보 업데이트
-                       updates[`investors/${currentStudent.studentId}/investments/${teamId}`] = { teamId, amount: updatedInvestment };
-                       
+                const updatedInvestment = currentInvestment + newAmount;
+                const updates = {};
+                const teamToUpdate = teamsData.find(t => t.id === teamId);
+                
+                if (teamToUpdate) {
+                    // 학생의 투자 정보 업데이트
+                    updates[`investors/${currentStudent.studentId}/investments/${teamId}`] = { teamId, amount: updatedInvestment };
+                    
                        // 팀의 총 투자금 업데이트
                        updates[`teams/${teamToUpdate.id}/totalInvestment`] = (teamToUpdate.totalInvestment || 0) + newAmount;
                    } else {
