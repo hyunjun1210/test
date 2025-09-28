@@ -56,6 +56,11 @@ section {
     text-align: right;
 }
 
+.by
+{
+    font-size: 10px;
+}
+
 button {
     padding: 10px 15px;
     border: none;

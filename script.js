@@ -179,7 +179,7 @@ function render() {
             // 로그인 화면
             app.innerHTML = `
                 <section id="student-login">
-                    <h2>학생 투자 참여</h2>
+                    <h2>학생 투자 참여<span class="by"> by 차현준</span></h2>
                     <div class="input-group">
                         <label for="student-id">학번 (숫자 5자리)</label>
                         <input type="text" id="student-id" placeholder="예: 20419" required maxlength="5">
@@ -234,7 +234,7 @@ function render() {
             // 투자 화면
             app.innerHTML = `
                 <section id="student-mode">
-                    <h2>학생 투자 모드</h2>
+                    <h2 class="by">학생 투자 모드<span class="by"> by 차현준</span></h2>
                     <p id="student-info"><strong>${currentStudent.name}</strong>님 (${currentStudent.studentId})</p>
                     <div id="investment-status">
                         <p>총 투자 가능 금액: 1,000만원</p>
