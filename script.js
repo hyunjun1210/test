@@ -182,11 +182,11 @@ function render() {
                     <h2>학생 투자 참여</h2>
                     <div class="input-group">
                         <label for="student-id">학번 (숫자 5자리)</label>
-                        <input type="text" id="student-id" placeholder="예: 10315" required maxlength="5">
+                        <input type="text" id="student-id" placeholder="예: 20419" required maxlength="5">
                     </div>
                     <div class="input-group">
                         <label for="student-name">이름</label>
-                        <input type="text" id="student-name" required>
+                        <input type="text" id="student-name"  placeholder="예: 차현준" required>
                     </div>
                     <button id="start-investment-btn">투자 시작</button>
                 </section>
