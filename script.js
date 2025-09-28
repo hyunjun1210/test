@@ -234,7 +234,7 @@ function render() {
             // 투자 화면
             app.innerHTML = `
                 <section id="student-mode">
-                    <h2 class="by">학생 투자 모드<span class="by"> by 차현준</span></h2>
+                    <h2>학생 투자 모드<span class="by"> by 차현준</span></h2>
                     <p id="student-info"><strong>${currentStudent.name}</strong>님 (${currentStudent.studentId})</p>
                     <div id="investment-status">
                         <p>총 투자 가능 금액: 1,000만원</p>
