@@ -491,5 +491,4 @@ function handleFileUpload(e) {
     reader.readAsArrayBuffer(file);
 }
 
-// 초기 렌더링
 render();
