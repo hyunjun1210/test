@@ -21,6 +21,10 @@ let currentStudent = null;
 
 const app = document.getElementById('app');
 
+// ✅ 고정된 투자 금액 (만원 단위)
+const FIXED_INVESTMENT_AMOUNTS = [300, 250, 200, 150, 100];
+const MAX_TOTAL_INVESTMENT = 1000; // 1,000만원
+
 // URL에서 관리자 모드 상태 로드
 function getUrlParams() {
     const params = new URLSearchParams(window.location.search);
@@ -209,6 +213,7 @@ function render() {
                         if (existingStudent) {
                             currentStudent = existingStudent;
                         } else {
+                            // 총 투자액도 0원으로 초기화
                             currentStudent = { studentId, name: studentName, totalInvestment: 0, investments: {} };
                             firebase.database().ref(`investors/${studentId}`).set(currentStudent);
                         }
@@ -237,12 +242,12 @@ function render() {
                     <h2>학생 투자 모드<span class="by"> by 차현준</span></h2>
                     <p id="student-info"><strong>${currentStudent.name}</strong>님 (${currentStudent.studentId})</p>
                     <div id="investment-status">
-                        <p>총 투자 가능 금액: 1,000만원</p>
+                        <p>총 투자 가능 금액: ${MAX_TOTAL_INVESTMENT.toLocaleString()}만원</p>
                         <p>현재 투자액: <span id="current-investment">0만원</span></p>
-                        <p>남은 투자 가능액: <span id="remaining-investment">1,000만원</span></p>
+                        <p>남은 투자 가능액: <span id="remaining-investment">${MAX_TOTAL_INVESTMENT.toLocaleString()}만원</span></p>
                     </div>
                     <hr>
-                    <h3>창업팀 목록</h3>
+                    <h3>창업팀 목록 (팀당 1회 투자 가능)</h3>
                     <ul id="team-list"></ul>
                     <h3>나의 투자 현황</h3>
                     <ul id="my-investments"></ul>
@@ -252,11 +257,12 @@ function render() {
                     </div>
                 </section>
             `;
+
             // 투자 현황 업데이트
             const updateInvestmentStatus = () => {
                 const investedAmount = currentStudent.investments ? Object.values(currentStudent.investments).reduce((sum, inv) => sum + inv.amount, 0) : 0;
                 document.getElementById('current-investment').textContent = investedAmount.toLocaleString() + '만원';
-                document.getElementById('remaining-investment').textContent = (1000 - investedAmount).toLocaleString() + '만원';
+                document.getElementById('remaining-investment').textContent = (MAX_TOTAL_INVESTMENT - investedAmount).toLocaleString() + '만원';
             };
 
             const teamList = document.getElementById('team-list');
@@ -264,80 +270,107 @@ function render() {
             
             teamsData.forEach(team => {
                 const li = document.createElement('li');
-                li.className = 'team-item';
-                // ✅ 이 부분을 수정했습니다.
+                const isInvested = currentStudent.investments && currentStudent.investments[team.id];
+                
+                li.className = 'team-item' + (isInvested ? ' invested-team' : '');
+                
+                // ✅ 셀렉트 박스 생성
+                const selectOptions = FIXED_INVESTMENT_AMOUNTS
+                    .filter(amount => amount <= (MAX_TOTAL_INVESTMENT - (currentStudent.investments ? Object.values(currentStudent.investments).reduce((sum, inv) => sum + inv.amount, 0) : 0)))
+                    .map(amount => `<option value="${amount}">${amount.toLocaleString()}만원</option>`)
+                    .join('');
+
                 li.innerHTML = `
                     <div class="team-info">
                         <strong>${team.name}</strong>
                         <span>총 투자금: ${(team.totalInvestment || 0).toLocaleString()}만원</span>
                     </div>
                     <div class="invest-form">
-                        <div class="input-wrapper">
-                            <input type="number" class="investment-amount" placeholder="투자 금액" min="1">
-                            <span>만원</span>
-                        </div>
-                        <button class="invest-btn" data-team-id="${team.id}">투자하기</button>
+                        ${isInvested 
+                            ? `<span class="error-message">✅ 이미 투자 완료 (투자액: ${currentStudent.investments[team.id].amount.toLocaleString()}만원)</span>`
+                            : `<select class="investment-select" data-team-id="${team.id}">
+                                    <option value="">금액 선택</option>
+                                    ${selectOptions}
+                                </select>
+                                <button class="invest-btn" data-team-id="${team.id}" disabled>투자하기</button>`
+                        }
                     </div>
                 `;
                 teamList.appendChild(li);
             });
 
-           // 투자 버튼 클릭 이벤트
-        document.querySelectorAll('.invest-btn').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const teamId = e.target.dataset.teamId;
-                const input = e.target.closest('.invest-form').querySelector('.investment-amount');
-                const newAmount = parseInt(input.value); // 사용자 입력 금액 (만원 단위)
+            // ✅ 셀렉트 박스 변경 이벤트 (버튼 활성화/비활성화)
+            document.querySelectorAll('.investment-select').forEach(select => {
+                const button = select.closest('.invest-form').querySelector('.invest-btn');
+                select.addEventListener('change', (e) => {
+                    const amount = parseInt(e.target.value);
+                    if (amount > 0) {
+                        button.disabled = false;
+                    } else {
+                        button.disabled = true;
+                    }
+                });
+            });
 
-                if (isNaN(newAmount) || newAmount <= 0) {
-                    alert('유효한 투자 금액을 입력하세요.');
-                    return;
-                }
+            // ✅ 투자 버튼 클릭 이벤트
+            document.querySelectorAll('.invest-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const teamId = e.target.dataset.teamId;
+                    const select = e.target.closest('.invest-form').querySelector('.investment-select');
+                    const amount = parseInt(select.value); // 사용자 선택 금액 (만원 단위)
 
-                const currentInvestments = currentStudent.investments || {};
-                const currentInvestment = currentInvestments[teamId]?.amount || 0;
-                const totalInvestedAmount = Object.values(currentInvestments).reduce((sum, inv) => sum + inv.amount, 0);
-                const totalRemaining = 1000 - totalInvestedAmount;
+                    if (isNaN(amount) || amount <= 0) {
+                        alert('투자 금액을 선택해주세요.');
+                        return;
+                    }
 
-                if (newAmount > totalRemaining) {
-                    alert('남은 투자 가능 금액을 초과할 수 없습니다.');
-                    return;
-                }
+                    // 한 팀당 1회 투자 제한 확인
+                    if (currentStudent.investments && currentStudent.investments[teamId]) {
+                        alert('이미 이 팀에 투자하셨습니다. 다른 팀에 투자해주세요.');
+                        render(); // 혹시 모를 버그 방지
+                        return;
+                    }
 
-                const updatedInvestment = currentInvestment + newAmount;
-                const updates = {};
-                const teamToUpdate = teamsData.find(t => t.id === teamId);
-                
-                if (teamToUpdate) {
-                    // 학생의 투자 정보 업데이트
-                    updates[`investors/${currentStudent.studentId}/investments/${teamId}`] = { teamId, amount: updatedInvestment };
+                    const totalInvestedAmount = currentStudent.investments ? Object.values(currentStudent.investments).reduce((sum, inv) => sum + inv.amount, 0) : 0;
                     
-                       // 팀의 총 투자금 업데이트
-                       updates[`teams/${teamToUpdate.id}/totalInvestment`] = (teamToUpdate.totalInvestment || 0) + newAmount;
-                   } else {
-                       console.error("오류: 투자를 시도한 팀을 찾을 수 없습니다.");
-                       alert("투자에 실패했습니다. 팀을 찾을 수 없습니다.");
-                       return;
-                   }
-                   
-                   firebase.database().ref().update(updates)
-                       .then(() => {
-                           // 현재 학생 객체 업데이트
-                           if (!currentStudent.investments) {
-                               currentStudent.investments = {};
-                           }
-                           currentStudent.investments[teamId] = { teamId, amount: updatedInvestment };
-                           updateMyInvestments();
-                           updateInvestmentStatus();
-                           alert('투자가 완료되었습니다!');
-                           input.value = ''; // 입력창 초기화
-                       })
-                       .catch(error => {
-                           console.error("투자 업데이트 실패: ", error);
-                           alert('투자에 실패했습니다.');
-                       });
-               });
-           });
+                    if (totalInvestedAmount + amount > MAX_TOTAL_INVESTMENT) {
+                        alert(`총 투자 가능 금액 ${MAX_TOTAL_INVESTMENT.toLocaleString()}만원을 초과할 수 없습니다.`);
+                        return;
+                    }
+
+                    const updates = {};
+                    const teamToUpdate = teamsData.find(t => t.id === teamId);
+                    
+                    if (teamToUpdate) {
+                        // 학생의 투자 정보 업데이트 (새로운 투자이므로 currentInvestment는 0)
+                        updates[`investors/${currentStudent.studentId}/investments/${teamId}`] = { teamId, amount: amount };
+                        
+                        // 팀의 총 투자금 업데이트
+                        updates[`teams/${teamToUpdate.id}/totalInvestment`] = (teamToUpdate.totalInvestment || 0) + amount;
+                    } else {
+                        console.error("오류: 투자를 시도한 팀을 찾을 수 없습니다.");
+                        alert("투자에 실패했습니다. 팀을 찾을 수 없습니다.");
+                        return;
+                    }
+                    
+                    firebase.database().ref().update(updates)
+                        .then(() => {
+                            // 현재 학생 객체 업데이트
+                            if (!currentStudent.investments) {
+                                currentStudent.investments = {};
+                            }
+                            currentStudent.investments[teamId] = { teamId, amount: amount };
+                            updateMyInvestments();
+                            updateInvestmentStatus();
+                            alert(`투자가 완료되었습니다! (${amount.toLocaleString()}만원)`);
+                            render(); // UI 전체 다시 렌더링하여 투자 불가능하게 만듦
+                        })
+                        .catch(error => {
+                            console.error("투자 업데이트 실패: ", error);
+                            alert('투자에 실패했습니다.');
+                        });
+                });
+            });
 
             // 나의 투자 현황 업데이트
             const updateMyInvestments = () => {
@@ -377,6 +410,7 @@ function render() {
                         updateMyInvestments();
                         updateInvestmentStatus();
                         alert('투자가 성공적으로 초기화되었습니다.');
+                        render(); // 초기화 후 팀 리스트도 업데이트
                     })
                     .catch(error => {
                         console.error("초기화 실패: ", error);
@@ -413,6 +447,7 @@ investorsRef.on('value', (snapshot) => {
     const data = snapshot.val();
     investorsData = data ? Object.values(data) : [];
     if(currentStudent) {
+        // 실시간으로 currentStudent 객체를 DB의 최신 데이터로 업데이트
         currentStudent = investorsData.find(inv => inv.studentId === currentStudent.studentId) || currentStudent;
     }
     render();
@@ -429,6 +464,11 @@ function handleFileUpload(e) {
     const reader = new FileReader();
     reader.onload = (evt) => {
         const data = new Uint8Array(evt.target.result);
+        // XLSX.read가 정의되어 있어야 합니다.
+        if (typeof XLSX === 'undefined') {
+            alert('XLSX 라이브러리가 로드되지 않았습니다.');
+            return;
+        }
         const workbook = XLSX.read(data, { type: 'array' });
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
